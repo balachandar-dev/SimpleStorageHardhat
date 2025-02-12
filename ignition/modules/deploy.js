@@ -7,13 +7,20 @@ async function main() {
     const simpleStorage = await simpleStorageFactory.deploy()
     await simpleStorage.waitForDeployment()
 
-    // console.log("deployed at", simpleStorage.target)
-    console.log(network.config)
+    console.log("deployed at", simpleStorage.target)
 
     if (network.config.chainId == 11155111 && process.env.ETHERSCAN_API_KEY) {
         simpleStorage.deploymentTransaction(6)
         await verify(simpleStorage.target, [])
     }
+
+    const currentValue = await simpleStorage.retrieve()
+    console.log(`Current value : ${currentValue}`)
+
+    const transactionResponse = await simpleStorage.store(7)
+    await transactionResponse.wait(1)
+    const updatedValue = await simpleStorage.retrieve()
+    console.log(`updated value : ${updatedValue}`)
 }
 
 async function verify(contractAddress, args) {
